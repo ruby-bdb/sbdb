@@ -15,8 +15,11 @@ via git:
 Installation
 ============
 
-	cd sbdb
-	gem install sbdb-0.0.5.gem
+	gem install sbdb-*.gem
+
+or: 
+
+	gem install sbdb --source http://github.com/DenisKnauf/sbdb/raw/master/sbdb-0.0.5.gem
 
 Documentation
 =============
