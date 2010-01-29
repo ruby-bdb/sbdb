@@ -16,7 +16,7 @@ Installation
 ============
 
 	cd sbdb
-	gem install sbdb.gemspec
+	gem install sbdb-0.0.5.gem
 
 Documentation
 =============
@@ -28,6 +28,7 @@ Usage
 
 First, open environment and database
 
+	require 'sbdb'
 	Dir.mkdir 'newenv'  rescue Errno::EEXIST
 	env = SBDB::Env.new 'newenv', SBDB::CREATE
 	db = env.open SBDB::Btree, 'newdb.db', 'mynewdb', SBDB::CREATE
