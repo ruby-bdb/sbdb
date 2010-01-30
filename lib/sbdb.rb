@@ -8,7 +8,11 @@ module SBDB
 	INIT_LOG = Bdb::DB_INIT_LOG
 	INIT_MPOOL = Bdb::DB_INIT_MPOOL
 
+	# Environments are for storing one or more databases and are important
+	# if you want to work with more than one process on one database.
+	# You needn't use Environment,  but it's usefull.
 	class Environment
+		# returns the Bdb-object.
 		def bdb_object
 			@env
 		end
@@ -31,6 +35,8 @@ module SBDB
 			nil
 		end
 
+		# Close the Environment.
+		# First you should close all databases!
 		def close
 			@env.close
 		end
@@ -39,6 +45,8 @@ module SBDB
 			alias open new
 		end
 
+		# Opens a Database.
+		# see SBDB::DB, SBDB::Btree, SBDB::Hash, SBDB::Recno, SBDB::Queue
 		def open type, *p, &e
 			p[5] = self
 			type.new *p, &e

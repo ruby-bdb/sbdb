@@ -1,33 +1,23 @@
-Bdb
-===
+= Dependencies
+
+== Bdb
 
 Your need first this library:
 
 http://github.com/DenisKnauf/bdb
 
-Download
-========
+= Download
 
 via git:
 
 	git clone git://github.com/DenisKnauf/sbdb.git
 
-Installation
-============
+= Installation
 
+	gem build sbdb.gemspec
 	gem install sbdb-*.gem
 
-or: 
-
-	gem install sbdb --source http://github.com/DenisKnauf/sbdb/raw/master/sbdb-0.0.5.gem
-
-Documentation
-=============
-
-Doesn't exist yet.
-
-Usage
-=====
+= Usage
 
 First, open environment and database
 
@@ -44,18 +34,18 @@ It works nearly like a Ruby-Hash:
 	db.map {|k, v| [k, v].join ' => '}		# => ["key => value"]
 	db.count		# => 1
 
-*SBDB::DB#each* uses a *SBDB::Cursor*:
+SBDB::DB#each uses a SBDB::Cursor:
 
 	cursor = db.cursor
 	cursor.each {|k,v| puts "#{k}: ${v}" }
 
-Don't forget to close everything, you opened!
+<strong>Don't forget to close everything, you've opened!</strong>
 
 	cursor.close
 	db.close
 	env.close
 
-But you can use a *lambda* to ensure to close everything:
+But you can use a <em>lambda</em> to ensure to close everything:
 
 	SBDB::Env.new( 'newenv', SBDB::CREATE) do |env|
 		env.open SBDB::Btree, 'newdb.db', 'mynewdb', SBDB::CREATE do |db|
@@ -63,4 +53,4 @@ But you can use a *lambda* to ensure to close everything:
 		end
 	end
 
-*SBDB::DB#to_hash* creates a cursor and close it later.
+SBDB::DB#to_hash creates a cursor and close it later.
