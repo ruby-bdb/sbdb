@@ -17,7 +17,8 @@ module SBDB
 			@env
 		end
 
-		def initialize dir, flags = nil, mode = nil
+		def initialize dir = nil, flags = nil, mode = nil
+			dif ||= '.'
 			flags ||= INIT_TXN | INIT_LOCK | INIT_LOG | INIT_MPOOL | CREATE
 			mode ||= 0
 			@env = Bdb::Env.new 0
@@ -49,10 +50,15 @@ module SBDB
 		# see SBDB::DB, SBDB::Btree, SBDB::Hash, SBDB::Recno, SBDB::Queue
 		def open type, *p, &e
 			p[5] = self
+			type ||= SBDB::Unkown
 			type.new *p, &e
 		end
 		alias db open
 		alias open_db open
+
+		def [] file, name = nil, &e
+			open nil, file, name, CREATE | AUTO_COMMIT, &e
+		end
 	end
 	Env = Environment
 
@@ -207,7 +213,16 @@ module SBDB
 
 	class Unknown < DB
 		def self.new *p, &e
-			super *p[0...2], UNKNOWN, *p[2..-1], &e
+			db = super *p[0...2], UNKNOWN, *p[2..-1], &e
+			case db.bdb_object.get_type
+			when BTREE  then Btree.new *p
+			when HASH   then Hash.new *p
+			when RECNO  then Recno.new *p
+			when QUEUE  then Queue.new *p
+			else super *p[0...2], UNKNOWN, *p[2..-1], &e
+			end
+		ensure
+			db.close
 		end
 	end
 
@@ -229,11 +244,11 @@ module SBDB
 		end
 
 		def [] k
-			super [k].pack('N')
+			super k.to_s
 		end
 
 		def []= k, v
-			super [k].pack('N'), v
+			super k.to_s
 		end
 	end
 	Array = Recno
@@ -244,11 +259,11 @@ module SBDB
 		end
 
 		def [] k
-			super [k].pack('N')
+			super k.to_s
 		end
 
 		def []= k, v
-			super [k].pack('N'), v
+			super k.to_s
 		end
 	end
 end
