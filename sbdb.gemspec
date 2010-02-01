@@ -9,16 +9,21 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Denis Knauf"]
-  s.date = %q{2010-01-29}
+  s.date = %q{2010-02-02}
   s.description = %q{Simple Ruby Berkeley DB wrapper library for bdb.}
   s.email = %q{Denis.Knauf@gmail.com}
   s.extra_rdoc_files = [
-    "README"
+    "LICENSE",
+     "README"
   ]
   s.files = [
     "README",
      "VERSION",
-     "lib/sbdb.rb"
+     "lib/sbdb.rb",
+     "lib/sbdb/cursor.rb",
+     "lib/sbdb/db.rb",
+     "lib/sbdb/environment.rb",
+     "lib/sbdb/weakhash.rb"
   ]
   s.homepage = %q{http://github.com/DenisKnauf/bdb}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -31,9 +36,12 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<bdb>, [">= 0"])
     else
+      s.add_dependency(%q<bdb>, [">= 0"])
     end
   else
+    s.add_dependency(%q<bdb>, [">= 0"])
   end
 end
 
