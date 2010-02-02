@@ -21,23 +21,23 @@ module SBDB
 		# returns the Bdb-object.
 		def bdb_object()  @env  end
 		# Opens a Btree in this Environment
-		def btree( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+		def btree file, name = nil, flags = nil, mode = nil, txn = nil, &e
 			Btree.new file, name, flags, mode, txn, self, &e
 		end 
 		# Opens a Hash in this Environment
-		def hash( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+		def hash file, name = nil, flags = nil, mode = nil, txn = nil, &e
 			Hash.new file, name, flags, mode, txn, self, &e
 		end 
 		# Opens a Recno in this Environment
-		def recno( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+		def recno file, name = nil, flags = nil, mode = nil, txn = nil, &e
 			Recno.new file, name, flags, mode, txn, self, &e
 		end 
 		# Opens a Queue in this Environment
-		def queue( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+		def queue file, name = nil, flags = nil, mode = nil, txn = nil, &e
 			Queue.new file, name, flags, mode, txn, self, &e
 		end 
 		# Opens a DB of unknown type in this Environment
-		def unknown( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+		def unknown file, name = nil, flags = nil, mode = nil, txn = nil, &e
 			Unknown.new file, name, flags, mode, txn, self, &e
 		end 
 
