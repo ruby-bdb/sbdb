@@ -60,7 +60,7 @@ module SBDB
 
 	class Unknown < DB
 		def self.new *p, &e
-			db = super *p[0...2], UNKNOWN, *p[2..-1], &e
+			db = super *p[0...2], UNKNOWN, *p[2..-1]
 			case db.bdb_object.get_type
 			when BTREE  then Btree.new *p
 			when HASH   then Hash.new  *p
