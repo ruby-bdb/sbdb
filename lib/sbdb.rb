@@ -6,6 +6,8 @@ require 'sbdb/cursor'
 module SBDB
 	CREATE      = Bdb::DB_CREATE
 	AUTO_COMMIT = Bdb::DB_AUTO_COMMIT
+	RDONLY      = Bdb::DB_RDONLY
+	READONLY    = RDONLY
 
 	def btree( *p)   Btree.new *p   end
 	def hash( *p)    Hash.new *p    end

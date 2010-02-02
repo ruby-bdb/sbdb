@@ -8,6 +8,7 @@ module SBDB
 		HASH = Bdb::Db::HASH
 		QUEUE = Bdb::Db::QUEUE
 		ARRAY = RECNO = Bdb::Db::RECNO
+		RDONLY = READLONY = Bdb::DB_RDONLY
 
 		attr_reader :home
 		include Enumerable
