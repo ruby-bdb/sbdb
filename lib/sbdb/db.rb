@@ -14,8 +14,8 @@ module SBDB
 		def bdb_object()  @db  end
 		def sync()  @db.sync  end
 		def close( f = nil)  @db.close f || 0  end
-		def []( k)  @db.get nil, k, nil, 0  end
-		def []=( k, v)  @db.put nil, k, v, 0  end
+		def []( k)  @db.get nil, k.nil? ? nil : k.to_s, nil, 0  end
+		def []=( k, v)  @db.put nil, k.nil? ? nil : k.to_s, v.nil? ? nil : v.to_s, 0  end
 		def cursor( &e)  Cursor.new self, &e  end
 
 		class << self
@@ -59,47 +59,41 @@ module SBDB
 	end
 
 	class Unknown < DB
-		def self.new *p, &e
-			db = super *p[0...2], UNKNOWN, *p[2..-1]
+		def self.new file, name, *p, &e
+			db = super file, name, UNKNOWN, *p[2..-1]
 			case db.bdb_object.get_type
-			when BTREE  then Btree.new *p
-			when HASH   then Hash.new  *p
-			when RECNO  then Recno.new *p
-			when QUEUE  then Queue.new *p
-			else super *p[0...2], UNKNOWN, *p[2..-1], &e
+			when BTREE  then Btree.new file, name, *p
+			when HASH   then Hash.new  file, name *p
+			when RECNO  then Recno.new file, name, *p
+			when QUEUE  then Queue.new file, name, *p
+			else super file, name, UNKNOWN, *p, &e
 			end
 		ensure db.close
 		end
 	end
 
 	class Btree < DB
-		def self.new *p, &e
-			super *p[0...2], BTREE, *p[2..-1], &e
+		def self.new file, name = nil, *p, &e
+			super file, name, BTREE, *p, &e
 		end
 	end
 
 	class Hash < DB
-		def self.new *p, &e
-			super *p[0...2], HASH, *p[2..-1], &e
+		def self.new file, name = nil, *p, &e
+			super file, name, HASH, *p, &e
 		end
 	end
 
 	class Recno < DB
-		def self.new *p, &e
-			super *p[0...2], RECNO, *p[2..-1], &e
+		def self.new file, name = nil, *p, &e
+			super file, name, RECNO, *p, &e
 		end
-
-		def []( k)     super k.to_s  end
-		def []=( k, v) super k.to_s  end
 	end
 	Array = Recno
 
 	class Queue < DB
-		def self.new *p, &e
-			super *p[0...2], QUEUE, *p[2..-1], &e
+		def self.new file, name = nil, *p, &e
+			super file, name, QUEUE, *p, &e
 		end
-
-		def []( k)     super k.to_s  end 
-		def []=( k, v) super k.to_s  end
 	end
 end
