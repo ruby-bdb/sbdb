@@ -32,7 +32,7 @@ module SBDB
 		def unknown( *p, &e) Unknown.new *p[0...5], self, p[5..-1], &e end 
 
 		def initialize dir = nil, flags = nil, mode = nil
-			@env = Bdb::Env.new 0
+			@dbs, @env = WeakHash.new, Bdb::Env.new 0
 			begin @env.open dir || '.', flags || INIT_TRANSACTION | CREATE, mode || 0
 			rescue Object
 				close
@@ -66,9 +66,10 @@ module SBDB
 		alias db open
 		alias open_db open
 
-		# Returns the DB like open,  but if it's already opened,
+		# Returns the DB like open, but if it's already opened,
 		# it returns the old instance.
-		# If you use this,  never use close. It's possible somebody else use it.
+		# If you use this, never use close. It's possible somebody else use it too.
+		# The Databases, which are opened, will close, if the Environment will close.
 		def [] file, name = nil, type = nil, &e
 			@dbs[ [file, name]] ||= (type || SBDB::Unkown).new file, name, nil, nil, self, &e
 		end
