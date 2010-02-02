@@ -30,7 +30,7 @@ module SBDB
 		def initialize ref
 			@cursor, @db = *case ref
 				when Cursor  then [ref.bdb_object.dup, ref.db]
-				when Bd::Db::Cursor  then [ref]
+				when Bdb::Db::Cursor  then [ref]
 				else [ref.bdb_object.cursor( nil, 0), ref]
 				end
 		end
