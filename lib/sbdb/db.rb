@@ -88,12 +88,28 @@ module SBDB
 		def self.new file, name = nil, *p, &e
 			super file, name, RECNO, *p, &e
 		end
+
+		def [] k
+			super [k].pack('I')
+		end
+
+		def []= k, v
+			super [k].pack('I'), v
+		end
 	end
 	Array = Recno
 
 	class Queue < DB
 		def self.new file, name = nil, *p, &e
 			super file, name, QUEUE, *p, &e
+		end
+
+		def [] k
+			super [k].pack('I')
+		end
+
+		def []= k, v
+			super [k].pack('I'), v
 		end
 	end
 end
