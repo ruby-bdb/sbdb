@@ -1,10 +1,11 @@
 module SBDB
 
 # See http://eigenclass.org/hiki/deferred-finalizers-in-Ruby
+# Not threadsafe.
 
 class WeakHash
 	attr_reader :cache
-	def initialize( cache = Hash.new )
+	def initialize cache = Hash.new
 		@cache = cache
 		@key_map = {}
 		@rev_cache = Hash.new{|h,k| h[k] = {}}
@@ -21,28 +22,41 @@ class WeakHash
 		end
 	end
 
-	 def []( key )
-		 value_id = @cache[key]
-		 return ObjectSpace._id2ref(value_id) unless value_id.nil?
-		 nil
-	 rescue RangeError
-		 nil
-	 end
+	def []= key, value
+		case key
+		when Fixnum, Symbol, true, false
+			key2 = key
+		else
+			key2 = key.dup
+		end
+		@rev_cache[value.object_id][key2] = true
+		@cache[key2] = value.object_id
+		@key_map[key.object_id] = key2
 
-	 def []=( key, value )
-		 case key
-		 when Fixnum, Symbol, true, false
-			 key2 = key
-		 else
-			 key2 = key.dup
-		 end
-		 @rev_cache[value.object_id][key2] = true
-		 @cache[key2] = value.object_id
-		 @key_map[key.object_id] = key2
+		ObjectSpace.define_finalizer(value, @reclaim_value)
+		ObjectSpace.define_finalizer(key, @reclaim_key)
+	end
 
-		 ObjectSpace.define_finalizer(value, @reclaim_value)
-		 ObjectSpace.define_finalizer(key, @reclaim_key)
-	 end
+	def [] key
+		value_id = @cache[key]
+		return ObjectSpace._id2ref( value_id)  unless value_id.nil?
+		nil
+	rescue RangeError
+		nil
+	end
+
+	def each &e
+		@cache.each do |k, vid|
+			unless vid.nil?
+				obj = begin
+						ObjectSpace._id2ref vid
+					rescue RangeError
+						next
+					end
+				yield k, obj
+			end
+		end
+	end
 end
 
 end
