@@ -5,10 +5,10 @@ module SBDB
 
 class WeakHash
 	attr_reader :cache
-	def initialize cache = Hash.new
+	def initialize cache = ::Hash.new
 		@cache = cache
 		@key_map = {}
-		@rev_cache = Hash.new{|h,k| h[k] = {}}
+		@rev_cache = ::Hash.new{|h,k| h[k] = {}}
 		@reclaim_value = lambda do |value_id| 
 			if @rev_cache.has_key? value_id
 				@rev_cache[value_id].each_key{|key| @cache.delete key}
