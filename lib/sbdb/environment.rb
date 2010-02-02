@@ -32,7 +32,7 @@ module SBDB
 		def unknown( *p, &e) Unknown.new *p[0...5], self, p[5..-1], &e end 
 
 		def initialize dir = nil, flags = nil, mode = nil
-			@dbs, @env = WeakHash.new, Bdb::Env.new 0
+			@dbs, @env = WeakHash.new, Bdb::Env.new( 0)
 			begin @env.open dir || '.', flags || INIT_TRANSACTION | CREATE, mode || 0
 			rescue Object
 				close
