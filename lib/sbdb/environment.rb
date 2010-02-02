@@ -21,15 +21,25 @@ module SBDB
 		# returns the Bdb-object.
 		def bdb_object()  @env  end
 		# Opens a Btree in this Environment
-		def btree( *p, &e)   Btree.new   *p[0...6], self, p[6..-1], &e end 
+		def btree( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+			Btree.new file, name, flags, mode, txn, self, &e
+		end 
 		# Opens a Hash in this Environment
-		def hash( *p, &e)    Hash.new    *p[0...6], self, p[6..-1], &e end 
+		def hash( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+			Hash.new file, name, flags, mode, txn, self, &e
+		end 
 		# Opens a Recno in this Environment
-		def recno( *p, &e)   Recno.new   *p[0...6], self, p[6..-1], &e end 
+		def recno( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+			Recno.new file, name, flags, mode, txn, self, &e
+		end 
 		# Opens a Queue in this Environment
-		def queue( *p, &e)   Queue.new   *p[0...6], self, p[6..-1], &e end 
+		def queue( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+			Queue.new file, name, flags, mode, txn, self, &e
+		end 
 		# Opens a DB of unknown type in this Environment
-		def unknown( *p, &e) Unknown.new *p[0...6], self, p[6..-1], &e end 
+		def unknown( file, name = nil, flags = nil, mode = nil, txn = nil, &e
+			Unknown.new file, name, flags, mode, txn, self, &e
+		end 
 
 		def initialize dir = nil, flags = nil, mode = nil
 			@dbs, @env = WeakHash.new, Bdb::Env.new( 0)
@@ -60,8 +70,8 @@ module SBDB
 
 		# Opens a Database.
 		# see SBDB::DB, SBDB::Btree, SBDB::Hash, SBDB::Recno, SBDB::Queue
-		def open type, *p, &e
-			(type || SBDB::Unkown).new *p[0...6], self, p[6..-1], &e
+		def open type, file, name = nil, flags = nil, mode = nil, txn = nil, &e
+			(type || SBDB::Unkown).new file, name, flags, mode, txn, self, &e
 		end
 		alias db open
 		alias open_db open
