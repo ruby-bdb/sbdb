@@ -35,6 +35,7 @@ class WeakHash
 
 		ObjectSpace.define_finalizer(value, @reclaim_value)
 		ObjectSpace.define_finalizer(key, @reclaim_key)
+		value
 	end
 
 	def [] key
