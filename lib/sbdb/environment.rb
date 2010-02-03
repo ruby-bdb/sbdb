@@ -60,7 +60,7 @@ module SBDB
 		# Close the Environment.
 		# First you should close all databases!
 		def close
-			@dbs.each{|db|db.close}
+			@dbs.each{|k, db|db.close}
 			@env.close
 		end
 
