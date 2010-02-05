@@ -12,12 +12,12 @@ module SBDB
 		include Enumerable
 		def bdb_object()  @cursor  end
 		def close()  @cursor.close  end
-		def get( k, v, f)  @cursor.get k, v, f  end
+		def get( k, v, f)  @cursor.get( k, v, f)  end
 		def count()  @cursor.count  end
-		def first( k = nil, v = nil)  @cursor.get k, v, FIRST  end
-		def last(  k = nil, v = nil)  @cursor.get k, v, LAST   end 
-		def next(  k = nil, v = nil)  @cursor.get k, v, NEXT   end 
-		def prev(  k = nil, v = nil)  @cursor.get k, v, PREV   end
+		def first( k = nil, v = nil)  get k, v, FIRST  end
+		def last(  k = nil, v = nil)  get k, v, LAST   end 
+		def next(  k = nil, v = nil)  get k, v, NEXT   end 
+		def prev(  k = nil, v = nil)  get k, v, PREV   end
 
 		def self.new *p
 			x = super *p
@@ -33,6 +33,12 @@ module SBDB
 				when Bdb::Db::Cursor  then [ref]
 				else [ref.bdb_object.cursor( nil, 0), ref]
 				end
+			if [Recno, Queue].any? {|t| t === @db }
+				def get k, v, f
+					l, w = @cursor.get( k, v, f)
+					l.nil? ? nil : [l.unpack('I')[0], w]
+				end
+			end
 		end
 
 		def reverse k = nil, v = nil, &e
@@ -42,10 +48,10 @@ module SBDB
 		def each k = nil, v = nil, f = nil, n = nil
 			return Enumerator.new( self, :each, k, v, f, n)  unless block_given?
 			n ||= NEXT
-			e = @cursor.get k, v, f || FIRST
+			e = get k, v, f || FIRST
 			return  unless e
 			yield *e
-			yield *e  while e = @cursor.get( k, v, n)
+			yield *e  while e = get( k, v, n)
 			nil
 		end
 	end

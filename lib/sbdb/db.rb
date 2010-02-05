@@ -9,6 +9,8 @@ module SBDB
 		QUEUE = Bdb::Db::QUEUE
 		ARRAY = RECNO = Bdb::Db::RECNO
 		RDONLY = READLONY = Bdb::DB_RDONLY
+		CONSUME = Bdb::DB_CONSUME
+		CONSUME_WAIT = Bdb::DB_CONSUME_WAIT
 
 		attr_reader :home
 		include Enumerable
@@ -16,8 +18,15 @@ module SBDB
 		def sync()  @db.sync  end
 		def close( f = nil)  @db.close f || 0  end
 		def []( k)  @db.get nil, k.nil? ? nil : k.to_s, nil, 0  end
-		def []=( k, v)  @db.put nil, k.nil? ? nil : k.to_s, v.nil? ? nil : v.to_s, 0  end
 		def cursor( &e)  Cursor.new self, &e  end
+
+		def []= k, v
+			if v.nil?
+				@db.del nil, k.to_s, 0
+			else
+				@db.put nil, k.nil? ? nil : k.to_s, v.to_s, 0
+			end
+		end
 
 		class << self
 			def new *p, &e
@@ -111,6 +120,10 @@ module SBDB
 
 		def []= k, v
 			super [k].pack('I'), v
+		end
+
+		def unshift
+			get nil, nil, nil, Bdb::DB_CONSUME
 		end
 	end
 end
