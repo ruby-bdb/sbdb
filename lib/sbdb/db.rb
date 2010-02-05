@@ -17,8 +17,14 @@ module SBDB
 		def bdb_object()  @db  end
 		def sync()  @db.sync  end
 		def close( f = nil)  @db.close f || 0  end
-		def []( k)  @db.get nil, k.nil? ? nil : k.to_s, nil, 0  end
 		def cursor( &e)  Cursor.new self, &e  end
+
+		def [] k
+			@db.get nil, k.nil? ? nil : k.to_s, nil, 0
+		rescue Bdb::DbError
+			return  if $!.code == Bdb::DB_KEYEMPTY
+			raise $!
+		end
 
 		def []= k, v
 			if v.nil?
