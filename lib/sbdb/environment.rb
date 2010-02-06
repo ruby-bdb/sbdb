@@ -81,7 +81,7 @@ module SBDB
 		# If you use this, never use close. It's possible somebody else use it too.
 		# The Databases, which are opened, will close, if the Environment will close.
 		def [] file, name = nil, type = nil, flags = nil, mode = nil, &e
-			@dbs[ [file, name, flags | CREATE]] ||= (type || SBDB::Unkown).new file, name, flags, mode, nil, self, &e
+			@dbs[ [file, name, flags | CREATE]] ||= (type || SBDB::Unknown).new file, name, flags, mode, nil, self, &e
 		end
 	end
 	Env = Environment

@@ -11,6 +11,11 @@ module SBDB
 		RDONLY = READLONY = Bdb::DB_RDONLY
 		CONSUME = Bdb::DB_CONSUME
 		CONSUME_WAIT = Bdb::DB_CONSUME_WAIT
+		TYPES = []
+		TYPES[BTREE] = Btree
+		TYPES[HASH] = Hash
+		TYPES[RECNO] = Recno
+		TYPES[QUEUE] = Queue
 
 		attr_reader :home
 		include Enumerable
@@ -50,7 +55,7 @@ module SBDB
 		def initialize file, name = nil, type = nil, flags = nil, mode = nil, txn = nil, env = nil
 			flags ||= 0
 			type ||= UNKNOWN
-			type = BTREE  if type == UNKNOWN and (flags & CREATE) == CREATE
+			#type = BTREE  if type == UNKNOWN and (flags & CREATE) == CREATE
 			@home, @db = env, env ? env.bdb_object.db : Bdb::Db.new
 			begin @db.open txn, file, name, type, flags, mode || 0
 			rescue Object
@@ -77,14 +82,11 @@ module SBDB
 	class Unknown < DB
 		def self.new file, name, *p, &e
 			db = super file, name, UNKNOWN, *p[2..-1]
-			case db.bdb_object.get_type
-			when BTREE  then Btree.new file, name, *p
-			when HASH   then Hash.new  file, name *p
-			when RECNO  then Recno.new file, name, *p
-			when QUEUE  then Queue.new file, name, *p
-			else super file, name, UNKNOWN, *p, &e
-			end
-		ensure db.close
+			dbt = begin
+					db.bdb_object.get_type
+				ensure db.close
+				end
+			TYPES[dbt] ? TYPES[dbt].new( file, name, *p, &e) : super( file, name, UNKNOWN, *p, &e)
 		end
 	end
 
