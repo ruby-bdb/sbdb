@@ -77,11 +77,7 @@ module SBDB
 
 	class Unknown < DB
 		def self.new file, name, *p, &e
-			db = super file, name, UNKNOWN, *p[2..-1]
-			dbt = begin
-					db.bdb_object.get_type
-				ensure db.close
-				end
+			db = super( file, name, UNKNOWN, *p) { db.bdb_object.get_type }
 			TYPES[dbt] ? TYPES[dbt].new( file, name, *p, &e) : super( file, name, UNKNOWN, *p, &e)
 		end
 	end
