@@ -2,6 +2,7 @@ require 'bdb'
 require 'sbdb/cursor'
 
 module SBDB
+	TYPES = []
 	class DB
 		UNKNOWN = Bdb::Db::UNKNOWN
 		BTREE = Bdb::Db::BTREE
@@ -11,11 +12,6 @@ module SBDB
 		RDONLY = READLONY = Bdb::DB_RDONLY
 		CONSUME = Bdb::DB_CONSUME
 		CONSUME_WAIT = Bdb::DB_CONSUME_WAIT
-		TYPES = []
-		TYPES[BTREE] = Btree
-		TYPES[HASH] = Hash
-		TYPES[RECNO] = Recno
-		TYPES[QUEUE] = Queue
 
 		attr_reader :home
 		include Enumerable
@@ -95,12 +91,14 @@ module SBDB
 			super file, name, BTREE, *p, &e
 		end
 	end
+	TYPES[DB::BTREE] = Btree
 
 	class Hash < DB
 		def self.new file, name = nil, *p, &e
 			super file, name, HASH, *p, &e
 		end
 	end
+	TYPES[DB::HASH] = Hash
 
 	class Recno < DB
 		def self.new file, name = nil, *p, &e
@@ -116,6 +114,7 @@ module SBDB
 		end
 	end
 	Array = Recno
+	TYPES[DB::RECNO] = Recno
 
 	class Queue < DB
 		def self.new file, name = nil, *p, &e
@@ -134,4 +133,5 @@ module SBDB
 			get nil, nil, nil, Bdb::DB_CONSUME
 		end
 	end
+	TYPES[DB::QUEUE] = Queue
 end
