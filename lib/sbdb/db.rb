@@ -108,6 +108,10 @@ module SBDB
 		def []= k, v
 			super [k].pack('I'), v
 		end
+
+		def push v
+			put nil, nil, v, Bdb::DB_APPEND
+		end
 	end
 	Array = Recno
 	TYPES[DB::RECNO] = Recno
@@ -127,6 +131,10 @@ module SBDB
 
 		def unshift
 			get nil, nil, nil, Bdb::DB_CONSUME
+		end
+
+		def push v
+			put nil, nil, v, Bdb::DB_APPEND
 		end
 	end
 	TYPES[DB::QUEUE] = Queue
