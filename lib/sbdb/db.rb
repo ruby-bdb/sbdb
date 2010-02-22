@@ -110,7 +110,7 @@ module SBDB
 		end
 
 		def push v
-			put nil, nil, v, Bdb::DB_APPEND
+			@db.put nil, nil, v, Bdb::DB_APPEND
 		end
 	end
 	Array = Recno
@@ -130,11 +130,11 @@ module SBDB
 		end
 
 		def unshift
-			get nil, nil, nil, Bdb::DB_CONSUME
+			@db.get nil, nil, nil, Bdb::DB_CONSUME
 		end
 
 		def push v
-			put nil, nil, v, Bdb::DB_APPEND
+			@db.put nil, nil, v, Bdb::DB_APPEND
 		end
 	end
 	TYPES[DB::QUEUE] = Queue
