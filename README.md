@@ -1,10 +1,7 @@
 Dependencies
 ============
 
-Bdb
----
-
-You need first the [Bdb](http://github.com/DenisKnauf/bdb) and of course ruby.
+You need first the [Bdb](http://github.com/DenisKnauf/bdb) and of course [ruby](http://ruby-lang.org).
 
 Download
 ========
