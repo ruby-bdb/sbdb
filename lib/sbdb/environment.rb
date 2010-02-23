@@ -21,24 +21,34 @@ module SBDB
 		# returns the Bdb-object.
 		def bdb_object()  @env  end
 		# Opens a Btree in this Environment
-		def btree file, name = nil, flags = nil, mode = nil, txn = nil, &e
-			Btree.new file, name, flags, mode, txn, self, &e
+		def btree file, *p, &e
+			p.push Hash.new  if Hash === p.last
+			p.last[:env] = self
+			Btree.new file, *p, &e
 		end 
 		# Opens a Hash in this Environment
-		def hash file, name = nil, flags = nil, mode = nil, txn = nil, &e
-			Hash.new file, name, flags, mode, txn, self, &e
+		def hash file, *p, &e
+			p.push Hash.new  if Hash === p.last
+			p.last[:env] = self
+			Hash.new file, *p, &e
 		end 
 		# Opens a Recno in this Environment
-		def recno file, name = nil, flags = nil, mode = nil, txn = nil, &e
-			Recno.new file, name, flags, mode, txn, self, &e
+		def recno file, *p, &e
+			p.push Hash.new  if Hash === p.last
+			p.last[:env] = self
+			Recno.new file, *p, &e
 		end 
 		# Opens a Queue in this Environment
-		def queue file, name = nil, flags = nil, mode = nil, txn = nil, &e
-			Queue.new file, name, flags, mode, txn, self, &e
+		def queue file, *p, &e
+			p.push Hash.new  if Hash === p.last
+			p.last[:env] = self
+			Queue.new file, *p, &e
 		end 
 		# Opens a DB of unknown type in this Environment
-		def unknown file, name = nil, flags = nil, mode = nil, txn = nil, &e
-			Unknown.new file, name, flags, mode, txn, self, &e
+		def unknown file, *p, &e
+			p.push Hash.new  if Hash === p.last
+			p.last[:env] = self
+			Unknown.new file, *p, &e
 		end 
 
 		def initialize dir = nil, flags = nil, mode = nil

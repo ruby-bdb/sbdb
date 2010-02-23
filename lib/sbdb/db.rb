@@ -22,9 +22,8 @@ module SBDB
 
 		def [] k
 			@db.get nil, k.nil? ? nil : k.to_s, nil, 0
-		rescue Bdb::DbError
-			return  if $!.code == Bdb::DB_KEYEMPTY
-			raise $!
+		rescue Bdb::KeyEmpty
+			return nil
 		end
 
 		def []= k, v
@@ -48,12 +47,17 @@ module SBDB
 			alias open new
 		end
 
-		def initialize file, name = nil, type = nil, flags = nil, mode = nil, txn = nil, env = nil
-			flags ||= 0
-			type ||= UNKNOWN
+		def initialize file, *args
+			info args: args
+			opts = Hash === args.last ? args.pop : {}
+			opts.update :name => args[0], :type => args[1], :flags => args[2], :mode => args[3], :env => args[4]
 			#type = BTREE  if type == UNKNOWN and (flags & CREATE) == CREATE
-			@home, @db = env, env ? env.bdb_object.db : Bdb::Db.new
-			begin @db.open txn, file, name, type, flags, mode || 0
+			@home, @db = opts[:env], opts[:env] ? opts[:env].bdb_object.db : Bdb::Db.new
+			opts[:type] ||= TYPES.index(self.class) || UNKNOWN
+				info opts: opts
+			begin
+				@db.open opts[:txn], file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
+				@db.re_len = opts[:re_len]  if opts[:re_len]
 			rescue Object
 				close
 				raise $!
@@ -76,31 +80,21 @@ module SBDB
 	end
 
 	class Unknown < DB
-		def self.new file, name, *p, &e
-			dbt = super( file, name, UNKNOWN, *p) {|db| db.bdb_object.get_type }
-			TYPES[dbt] ? TYPES[dbt].new( file, name, *p, &e) : super( file, name, UNKNOWN, *p, &e)
+		def self.new file, *p, &e
+			dbt = super( file, *p) {|db| db.bdb_object.get_type }
+			TYPES[dbt] ? TYPES[dbt].new( file, *p, &e) : super( file, *p, &e)
 		end
 	end
 
 	class Btree < DB
-		def self.new file, name = nil, *p, &e
-			super file, name, BTREE, *p, &e
-		end
 	end
 	TYPES[DB::BTREE] = Btree
 
 	class Hash < DB
-		def self.new file, name = nil, *p, &e
-			super file, name, HASH, *p, &e
-		end
 	end
 	TYPES[DB::HASH] = Hash
 
 	class Recno < DB
-		def self.new file, name = nil, *p, &e
-			super file, name, RECNO, *p, &e
-		end
-
 		def [] k
 			super [k].pack('I')
 		end
@@ -110,17 +104,13 @@ module SBDB
 		end
 
 		def push v
-			@db.put nil, nil, v, Bdb::DB_APPEND
+			@db.put nil, "\0\0\0\0", v, Bdb::DB_APPEND
 		end
 	end
 	Array = Recno
 	TYPES[DB::RECNO] = Recno
 
 	class Queue < DB
-		def self.new file, name = nil, *p, &e
-			super file, name, QUEUE, *p, &e
-		end
-
 		def [] k
 			super [k].pack('I')
 		end
@@ -134,7 +124,7 @@ module SBDB
 		end
 
 		def push v
-			@db.put nil, nil, v, Bdb::DB_APPEND
+			@db.put nil, "\0\0\0\0", v, Bdb::DB_APPEND
 		end
 	end
 	TYPES[DB::QUEUE] = Queue
