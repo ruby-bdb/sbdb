@@ -14,10 +14,10 @@ Gem::Specification.new do |s|
   s.email = %q{Denis.Knauf@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README"
+     "README.md"
   ]
   s.files = [
-    "README",
+    "README.md",
      "VERSION",
      "lib/sbdb.rb",
      "lib/sbdb/cursor.rb",

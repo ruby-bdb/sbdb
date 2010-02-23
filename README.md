@@ -4,9 +4,7 @@ Dependencies
 Bdb
 ---
 
-Your need first this library:
-
-http://github.com/DenisKnauf/bdb
+You need first the [Bdb](http://github.com/DenisKnauf/bdb) and of course ruby.
 
 Download
 ========

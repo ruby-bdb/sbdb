@@ -10,7 +10,7 @@ begin
     gem.email = "Denis.Knauf@gmail.com"
     gem.homepage = "http://github.com/DenisKnauf/bdb"
     gem.authors = ["Denis Knauf"]
-    gem.files = ["README", "VERSION", "lib/**/*.rb", "test/**/*.rb"]
+    gem.files = ["README.md", "VERSION", "lib/**/*.rb", "test/**/*.rb"]
     gem.require_paths = ["lib"]
 		gem.add_dependency 'bdb'
   end

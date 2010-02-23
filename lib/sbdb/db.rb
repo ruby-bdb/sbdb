@@ -117,7 +117,7 @@ module SBDB
 		end
 
 		def unshift
-			@db.get nil, nil, nil, Bdb::DB_CONSUME
+			@db.get nil, "\0\0\0\0", nil, Bdb::DB_CONSUME
 		end
 
 		def push v
