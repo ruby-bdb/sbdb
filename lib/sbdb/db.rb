@@ -53,12 +53,8 @@ module SBDB
 			#type = BTREE  if type == UNKNOWN and (flags & CREATE) == CREATE
 			@home, @db = opts[:env], opts[:env] ? opts[:env].bdb_object.db : Bdb::Db.new
 			opts[:type] = TYPES.index(self.class) || UNKNOWN
-			info self: self, opts: opts
-			info 're_len before' => @db.re_len
 			@db.re_len = opts[:re_len]  if opts[:re_len]
-			info 're_len after' => @db.re_len
-			begin
-				@db.open opts[:txn], file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
+			begin @db.open opts[:txn], file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
 			rescue Object
 				close
 				raise $!
