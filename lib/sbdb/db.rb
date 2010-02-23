@@ -48,16 +48,17 @@ module SBDB
 		end
 
 		def initialize file, *args
-			info args: args
-			opts = Hash === args.last ? args.pop : {}
-			opts.update :name => args[0], :type => args[1], :flags => args[2], :mode => args[3], :env => args[4]
+			opts = ::Hash === args.last ? args.pop : {}
+			opts = {:name => args[0], :type => args[1], :flags => args[2], :mode => args[3], :env => args[4]}.update opts
 			#type = BTREE  if type == UNKNOWN and (flags & CREATE) == CREATE
 			@home, @db = opts[:env], opts[:env] ? opts[:env].bdb_object.db : Bdb::Db.new
-			opts[:type] ||= TYPES.index(self.class) || UNKNOWN
-				info opts: opts
+			opts[:type] = TYPES.index(self.class) || UNKNOWN
+			info self: self, opts: opts
+			info 're_len before' => @db.re_len
+			@db.re_len = opts[:re_len]  if opts[:re_len]
+			info 're_len after' => @db.re_len
 			begin
 				@db.open opts[:txn], file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
-				@db.re_len = opts[:re_len]  if opts[:re_len]
 			rescue Object
 				close
 				raise $!

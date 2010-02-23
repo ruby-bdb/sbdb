@@ -22,33 +22,23 @@ module SBDB
 		def bdb_object()  @env  end
 		# Opens a Btree in this Environment
 		def btree file, *p, &e
-			p.push Hash.new  if Hash === p.last
-			p.last[:env] = self
-			Btree.new file, *p, &e
+			open Btree, file, *p, &e
 		end 
 		# Opens a Hash in this Environment
 		def hash file, *p, &e
-			p.push Hash.new  if Hash === p.last
-			p.last[:env] = self
-			Hash.new file, *p, &e
+			open Hash, file, *p, &e
 		end 
 		# Opens a Recno in this Environment
 		def recno file, *p, &e
-			p.push Hash.new  if Hash === p.last
-			p.last[:env] = self
-			Recno.new file, *p, &e
+			open Recno, file, *p, &e
 		end 
 		# Opens a Queue in this Environment
 		def queue file, *p, &e
-			p.push Hash.new  if Hash === p.last
-			p.last[:env] = self
-			Queue.new file, *p, &e
+			open Queue, file, *p, &e
 		end 
 		# Opens a DB of unknown type in this Environment
 		def unknown file, *p, &e
-			p.push Hash.new  if Hash === p.last
-			p.last[:env] = self
-			Unknown.new file, *p, &e
+			open Unknown, file, *p, &e
 		end 
 
 		def initialize dir = nil, flags = nil, mode = nil
@@ -80,8 +70,10 @@ module SBDB
 
 		# Opens a Database.
 		# see SBDB::DB, SBDB::Btree, SBDB::Hash, SBDB::Recno, SBDB::Queue
-		def open type, file, name = nil, flags = nil, mode = nil, txn = nil, &e
-			(type || SBDB::Unkown).new file, name, flags, mode, txn, self, &e
+		def open type, file, *p, &e
+			p.push ::Hash.new  unless ::Hash === p.last
+			p.last[:env] = self
+			(type || SBDB::Unkown).new file, *p, &e
 		end
 		alias db open
 		alias open_db open
@@ -90,8 +82,13 @@ module SBDB
 		# it returns the old instance.
 		# If you use this, never use close. It's possible somebody else use it too.
 		# The Databases, which are opened, will close, if the Environment will close.
-		def [] file, name = nil, type = nil, flags = nil, mode = nil, &e
-			@dbs[ [file, name, flags | CREATE]] ||= (type || SBDB::Unknown).new file, name, flags, mode, nil, self, &e
+		def [] file, *p, &e
+			p.push ::Hash.new  unless ::Hash === p.last
+			p.last[:env] = self
+			name = String === p[0] ? p[0] : p.last[:name]
+			flags = Fixnum === p[1] ? p[1] : p.last[:flags]
+			type = Fixnum === p[2] ? p[2] : p.last[:type]
+			@dbs[ [file, name, flags | CREATE]] ||= (type || SBDB::Unknown).new file, *p, &e
 		end
 	end
 	Env = Environment
