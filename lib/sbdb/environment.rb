@@ -41,9 +41,18 @@ module SBDB
 			open Unknown, file, *p, &e
 		end 
 
-		def initialize dir = nil, flags = nil, mode = nil
+		# args:
+		#   args[0] => dir
+		#   args[1] => flags
+		#   args[3] => mode
+		# possible options (via Hash):
+		#	  :dir, :flags, :mode, :log_config
+		def initialize *args
+			opts = ::Hash === args.last ? args.pop : {}
+			opts = {:dir => args[0], :flags => args[1], :mode => args[2]}.update opts
 			@dbs, @env = WeakHash.new, Bdb::Env.new( 0)
-			begin @env.open dir || '.', flags || INIT_TRANSACTION | CREATE, mode || 0
+			@env.log_config = opts[:log_config]  if opts[:log_config]
+			begin @env.open opts[:dir]||'.', opts[:flags]|| INIT_TRANSACTION|CREATE, opts[:mode]||0
 			rescue Object
 				close
 				raise

@@ -54,7 +54,8 @@ module SBDB
 			@home, @db = opts[:env], opts[:env] ? opts[:env].bdb_object.db : Bdb::Db.new
 			opts[:type] = TYPES.index(self.class) || UNKNOWN
 			@db.re_len = opts[:re_len]  if opts[:re_len]
-			begin @db.open opts[:txn], file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
+			begin
+				@db.open opts[:txn], file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
 			rescue Object
 				close
 				raise $!
