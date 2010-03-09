@@ -47,7 +47,7 @@ module SBDB
 		end 
 
 		def transaction flags = nil, &e
-			Transaction.new flags, &e
+			Transaction.new self, flags, &e
 		end
 		alias txn transaction
 
@@ -62,8 +62,7 @@ module SBDB
 			opts = {:dir => args[0], :flags => args[1], :mode => args[2]}.update opts
 			@dbs, @env = WeakHash.new, Bdb::Env.new( 0)
 			@env.log_config opts[:log_config], 1  if opts[:log_config]
-			p lg_bsize: @env.lg_bsize
-			@env.lg_bsize = 5*2**20  if opts[:lg_bsize]
+			@env.lg_bsize = opts[:lg_bsize]  if opts[:lg_bsize]
 			begin @env.open opts[:dir]||'.', opts[:flags]|| INIT_TRANSACTION|CREATE, opts[:mode]||0
 			rescue Object
 				close
