@@ -17,6 +17,11 @@ module SBDB
 		PRIVATE    = Bdb::DB_PRIVATE
 		SYSTEM_MEM = Bdb::DB_SYSTEM_MEM
 		TXN_NOSYNC = Bdb::DB_TXN_NOSYNC
+		LOG_DIRECT = Bdb::DB_LOG_DIRECT
+		LOG_DSYNC  = Bdb::DB_LOG_DSYNC
+		LOG_AUTO_REMOVE = Bdb::DB_LOG_AUTO_REMOVE
+		LOG_IN_MEMORY = Bdb::DB_LOG_IN_MEMORY
+		LOG_ZERO   = Bdb::DB_LOG_ZERO
 
 		# returns the Bdb-object.
 		def bdb_object()  @env  end
@@ -41,6 +46,11 @@ module SBDB
 			open Unknown, file, *p, &e
 		end 
 
+		def transaction flags = nil, &e
+			Transaction.new flags, &e
+		end
+		alias txn transaction
+
 		# args:
 		#   args[0] => dir
 		#   args[1] => flags
@@ -51,7 +61,9 @@ module SBDB
 			opts = ::Hash === args.last ? args.pop : {}
 			opts = {:dir => args[0], :flags => args[1], :mode => args[2]}.update opts
 			@dbs, @env = WeakHash.new, Bdb::Env.new( 0)
-			@env.log_config = opts[:log_config]  if opts[:log_config]
+			@env.log_config opts[:log_config], 1  if opts[:log_config]
+			p lg_bsize: @env.lg_bsize
+			@env.lg_bsize = 5*2**20  if opts[:lg_bsize]
 			begin @env.open opts[:dir]||'.', opts[:flags]|| INIT_TRANSACTION|CREATE, opts[:mode]||0
 			rescue Object
 				close

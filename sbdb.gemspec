@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Denis Knauf"]
-  s.date = %q{2010-02-23}
+  s.date = %q{2010-03-09}
   s.description = %q{Simple Ruby Berkeley DB wrapper library for bdb.}
   s.email = %q{Denis.Knauf@gmail.com}
   s.extra_rdoc_files = [
@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
      "lib/sbdb/cursor.rb",
      "lib/sbdb/db.rb",
      "lib/sbdb/environment.rb",
+     "lib/sbdb/transaction.rb",
      "lib/sbdb/weakhash.rb"
   ]
   s.homepage = %q{http://github.com/DenisKnauf/bdb}
