@@ -2,6 +2,7 @@ require 'bdb'
 require 'sbdb/environment'
 require 'sbdb/db'
 require 'sbdb/cursor'
+require 'sbdb/transaction'
 
 module SBDB
 	CREATE      = Bdb::DB_CREATE

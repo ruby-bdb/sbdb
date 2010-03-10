@@ -16,9 +16,7 @@ class WeakHash
 			end
 		end
 		@reclaim_key = lambda do |key_id|
-			if @key_map.has_key? key_id
-				@cache.delete @key_map.delete(key_id)
-			end
+			@cache.delete @key_map.delete(key_id)  if @key_map.has_key? key_id
 		end
 	end
 

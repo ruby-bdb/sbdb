@@ -1,6 +1,7 @@
 require 'bdb'
 require 'sbdb/weakhash'
 require 'sbdb/db'
+require 'sbdb/transaction'
 
 module SBDB
 	# Environments are for storing one or more databases and are important
@@ -47,7 +48,7 @@ module SBDB
 		end 
 
 		def transaction flags = nil, &e
-			Transaction.new self, flags, &e
+			SBDB::Transaction.new self, flags, &e
 		end
 		alias txn transaction
 
@@ -63,18 +64,24 @@ module SBDB
 			@dbs, @env = WeakHash.new, Bdb::Env.new( 0)
 			@env.log_config opts[:log_config], 1  if opts[:log_config]
 			@env.lg_bsize = opts[:lg_bsize]  if opts[:lg_bsize]
+			@env.lg_max = opts[:lg_max]  if opts[:lg_max]
 			begin @env.open opts[:dir]||'.', opts[:flags]|| INIT_TRANSACTION|CREATE, opts[:mode]||0
 			rescue Object
 				close
 				raise
 			end
+		end
 
-			return self  unless block_given?
-
-			begin yield self
-			ensure close
-			end
-			nil
+		def self.new *args
+			obj = r = super( *args)
+			begin r = yield obj
+			ensure
+				begin obj.close
+				rescue Object
+					$stderr.puts [$!.class,$!,$!.backtrace].inspect
+				end
+			end  if block_given?
+			r
 		end
 
 		# Close the Environment.

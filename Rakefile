@@ -12,7 +12,7 @@ begin
     gem.authors = ["Denis Knauf"]
     gem.files = ["README.md", "VERSION", "lib/**/*.rb", "test/**/*.rb"]
     gem.require_paths = ["lib"]
-		gem.add_dependency 'bdb'
+		gem.add_dependency 'dk-bdb'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

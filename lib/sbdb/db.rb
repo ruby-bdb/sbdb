@@ -21,19 +21,29 @@ module SBDB
 		def close( f = nil)  @db.close f || 0  end
 		def cursor( &e)  Cursor.new self, &e  end
 
-		def [] k
-			@db.get nil, k.nil? ? nil : k.to_s, nil, 0
+		def at k, txn = nil
+			@db.get _txn(txn), k.nil? ? nil : k.to_s, nil, 0
 		rescue Bdb::KeyEmpty
 			return nil
 		end
+		alias [] at
 
-		def []= k, v
+		def put k, v, txn = nil
 			if v.nil?
-				@db.del nil, k.to_s, 0
+				@db.del _txn(txn), k.to_s, 0
 			else
-				@db.put nil, k.nil? ? nil : k.to_s, v.to_s, 0
+				@db.put _txn(txn), k.nil? ? nil : k.to_s, v.to_s, 0
 			end
 		end
+		
+		def []= k, v
+			put k, v
+		end
+
+		def delete k, txn = nil
+			@db.del _txn(txn), k.to_s
+		end
+		alias del delete
 
 		class << self
 			def new *p, &e
@@ -41,11 +51,22 @@ module SBDB
 				return x  unless e
 				begin e.call x
 				ensure
-					x.sync
-					x.close
+					begin x.sync
+					rescue Object
+						$stderr.puts [$!.class,$!,$!.backtrace].inspect
+					end
+					begin x.close
+					rescue Object
+						$stderr.puts [$!.class,$!,$!.backtrace].inspect
+					end
 				end
 			end
 			alias open new
+		end
+
+		def _txn t
+			t ||= @txn
+			t && t.bdb_object
 		end
 
 		def initialize file, *args
@@ -55,7 +76,7 @@ module SBDB
 			@home, @db = opts[:env], opts[:env] ? opts[:env].bdb_object.db : Bdb::Db.new
 			opts[:type] = TYPES.index(self.class) || UNKNOWN
 			@db.re_len = opts[:re_len]  if opts[:re_len]
-			txn = opts[:txn] || @txn
+			txn = opts[:txn]
 			begin
 				@db.open txn && txn.bdb_object, file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
 			rescue Object
@@ -76,6 +97,10 @@ module SBDB
 			h = {}
 			each( k, v) {|k, v| h[ k] = v }
 			h
+		end
+
+		def truncate txn = nil
+			@db.truncate _txn(txn)
 		end
 	end
 
@@ -103,8 +128,8 @@ module SBDB
 			super [k].pack('I'), v
 		end
 
-		def push v
-			@db.put nil, "\0\0\0\0", v, Bdb::DB_APPEND
+		def push v, txn = nil
+			@db.put _txn(txn), "\0\0\0\0", v, Bdb::DB_APPEND
 		end
 	end
 	Array = Recno
@@ -119,12 +144,12 @@ module SBDB
 			super [k].pack('I'), v
 		end
 
-		def unshift
-			@db.get nil, "\0\0\0\0", nil, Bdb::DB_CONSUME
+		def unshift txn = nil
+			@db.get _txn(txn), "\0\0\0\0", nil, Bdb::DB_CONSUME
 		end
 
-		def push v
-			@db.put nil, "\0\0\0\0", v, Bdb::DB_APPEND
+		def push v, txn = nil
+			@db.put _txn(txn), "\0\0\0\0", v, Bdb::DB_APPEND
 		end
 	end
 	TYPES[DB::QUEUE] = Queue
