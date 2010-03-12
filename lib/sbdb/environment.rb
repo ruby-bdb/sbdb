@@ -75,11 +75,7 @@ module SBDB
 		def self.new *args
 			obj = r = super( *args)
 			begin r = yield obj
-			ensure
-				begin obj.close
-				rescue Object
-					$stderr.puts [$!.class,$!,$!.backtrace].inspect
-				end
+			ensure SBDB::raise_barrier obj.method(:close)
 			end  if block_given?
 			r
 		end
@@ -112,9 +108,10 @@ module SBDB
 		def [] file, *p, &e
 			p.push ::Hash.new  unless ::Hash === p.last
 			p.last[:env] = self
-			name = String === p[0] ? p[0] : p.last[:name]
-			flags = Fixnum === p[1] ? p[1] : p.last[:flags]
-			type = Fixnum === p[2] ? p[2] : p.last[:type]
+			name, flags, type =
+					String === p[0] ? p[0] : p.last[:name],
+					Fixnum === p[1] ? p[1] : p.last[:flags],
+					Fixnum === p[2] ? p[2] : p.last[:type]
 			@dbs[ [file, name, flags | CREATE]] ||= (type || SBDB::Unknown).new file, *p, &e
 		end
 	end

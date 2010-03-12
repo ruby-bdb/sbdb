@@ -16,4 +16,10 @@ module SBDB
 	def queue( *p)   Queue.new *p   end 
 	def unknown( *p) Unknown.new *p end
 	alias open_db unknown
+
+	def raise_barrier *ps, &e
+		e.call *ps
+	rescue Object
+		$stderr.puts [$!.class,$!,$!.backtrace].inspect
+	end
 end

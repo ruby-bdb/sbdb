@@ -46,20 +46,14 @@ module SBDB
 		alias del delete
 
 		class << self
-			def new *p, &e
-				x = super *p
-				return x  unless e
-				begin e.call x
+			def new *ps, &exe
+				ret = obj = super( *ps)
+				begin ret = e.call obj
 				ensure
-					begin x.sync
-					rescue Object
-						$stderr.puts [$!.class,$!,$!.backtrace].inspect
-					end
-					begin x.close
-					rescue Object
-						$stderr.puts [$!.class,$!,$!.backtrace].inspect
-					end
-				end
+					SBDB::raise_barrier obj.method(:sync)
+					SBDB::raise_barrier obj.method(:close)
+				end  if exe
+				ret
 			end
 			alias open new
 		end
@@ -119,7 +113,7 @@ module SBDB
 	end
 	TYPES[DB::HASH] = Hash
 
-	class Recno < DB
+	module Arrayisch
 		def [] k
 			super [k].pack('I')
 		end
@@ -132,24 +126,17 @@ module SBDB
 			@db.put _txn(txn), "\0\0\0\0", v, Bdb::DB_APPEND
 		end
 	end
+
+	class Recno < DB
+		extend Arrayisch
+	end
 	Array = Recno
 	TYPES[DB::RECNO] = Recno
 
-	class Queue < DB
-		def [] k
-			super [k].pack('I')
-		end
-
-		def []= k, v
-			super [k].pack('I'), v
-		end
-
+	class Queue < Arrayisch
+		extend Arrayisch
 		def unshift txn = nil
 			@db.get _txn(txn), "\0\0\0\0", nil, Bdb::DB_CONSUME
-		end
-
-		def push v, txn = nil
-			@db.put _txn(txn), "\0\0\0\0", v, Bdb::DB_APPEND
 		end
 	end
 	TYPES[DB::QUEUE] = Queue
