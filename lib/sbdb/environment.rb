@@ -27,28 +27,28 @@ module SBDB
 		# returns the Bdb-object.
 		def bdb_object()  @env  end
 		# Opens a Btree in this Environment
-		def btree file, *p, &e
-			open Btree, file, *p, &e
+		def btree file, *ps, &exe
+			open Btree, file, *ps, &exe
 		end 
 		# Opens a Hash in this Environment
-		def hash file, *p, &e
-			open Hash, file, *p, &e
+		def hash file, *ps, &exe
+			open Hash, file, *ps, &exe
 		end 
 		# Opens a Recno in this Environment
-		def recno file, *p, &e
-			open Recno, file, *p, &e
+		def recno file, *ps, &exe
+			open Recno, file, *ps, &exe
 		end 
 		# Opens a Queue in this Environment
-		def queue file, *p, &e
-			open Queue, file, *p, &e
+		def queue file, *ps, &exe
+			open Queue, file, *ps, &exe
 		end 
 		# Opens a DB of unknown type in this Environment
-		def unknown file, *p, &e
-			open Unknown, file, *p, &e
+		def unknown file, *ps, &exe
+			open Unknown, file, *ps, &exe
 		end 
 
-		def transaction flags = nil, &e
-			SBDB::Transaction.new self, flags, &e
+		def transaction flg = nil, &exe
+			SBDB::Transaction.new self, flg, &exe
 		end
 		alias txn transaction
 
@@ -73,17 +73,17 @@ module SBDB
 		end
 
 		def self.new *args
-			obj = r = super( *args)
-			begin r = yield obj
+			obj = ret = super( *args)
+			begin ret = yield obj
 			ensure SBDB::raise_barrier obj.method(:close)
 			end  if block_given?
-			r
+			ret
 		end
 
 		# Close the Environment.
 		# First you should close all databases!
 		def close
-			@dbs.each{|k, db|db.close}
+			@dbs.each{|key, db|db.close}
 			@env.close
 		end
 
@@ -93,10 +93,10 @@ module SBDB
 
 		# Opens a Database.
 		# see SBDB::DB, SBDB::Btree, SBDB::Hash, SBDB::Recno, SBDB::Queue
-		def open type, file, *p, &e
-			p.push ::Hash.new  unless ::Hash === p.last
-			p.last[:env] = self
-			(type || SBDB::Unkown).new file, *p, &e
+		def open type, file, *ps, &exe
+			ps.push ::Hash.new  unless ::Hash === ps.last
+			ps.last[:env] = self
+			(type || SBDB::Unkown).new file, *ps, &exe
 		end
 		alias db open
 		alias open_db open
@@ -105,14 +105,14 @@ module SBDB
 		# it returns the old instance.
 		# If you use this, never use close. It's possible somebody else use it too.
 		# The Databases, which are opened, will close, if the Environment will close.
-		def [] file, *p, &e
-			p.push ::Hash.new  unless ::Hash === p.last
-			p.last[:env] = self
-			name, flags, type =
-					String === p[0] ? p[0] : p.last[:name],
-					Fixnum === p[1] ? p[1] : p.last[:flags],
-					Fixnum === p[2] ? p[2] : p.last[:type]
-			@dbs[ [file, name, flags | CREATE]] ||= (type || SBDB::Unknown).new file, *p, &e
+		def [] file, *ps, &exe
+			ps.push ::Hash.new  unless ::Hash === ps.last
+			ps.last[:env] = self
+			name, flg, type =
+					String === ps[0] ? ps[0] : ps.last[:name],
+					Fixnum === ps[1] ? ps[1] : ps.last[:flags],
+					Fixnum === ps[2] ? ps[2] : ps.last[:type]
+			@dbs[ [file, name, flg | CREATE]] ||= (type || SBDB::Unknown).new file, *ps, &exe
 		end
 	end
 	Env = Environment

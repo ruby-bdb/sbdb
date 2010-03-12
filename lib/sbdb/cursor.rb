@@ -10,21 +10,37 @@ module SBDB
 		attr_reader :db
 
 		include Enumerable
-		def bdb_object()  @cursor  end
-		def close()  @cursor.close  end
-		def get( k, v, f)  @cursor.get( k, v, f)  end
-		def count()  @cursor.count  end
-		def first( k = nil, v = nil)  get k, v, FIRST  end
-		def last(  k = nil, v = nil)  get k, v, LAST   end 
-		def next(  k = nil, v = nil)  get k, v, NEXT   end 
-		def prev(  k = nil, v = nil)  get k, v, PREV   end
+		def bdb_object
+			@cursor
+		end
+		def close
+			@cursor.close
+		end
+		def get key, val, flg
+			@cursor.get key, val, flg
+		end
+		def count
+			@cursor.count
+		end
+		def first key = nil, val = nil
+			get key, val, FIRST
+		end
+		def last key = nil, val = nil
+			get key, val, LAST
+		end 
+		def next key = nil, val = nil
+			get key, val, NEXT
+		end 
+		def prev key = nil, val = nil
+			get key, val, PREV
+		end
 
-		def self.new *p
-			x = super *p
-			return x  unless block_given?
-			begin yield x
-			ensure x.close
-			end
+		def self.new *ps
+			ret = obj = super *ps
+			begin ret = yield obj
+			ensure obj.close
+			end  if block_given?
+			ret
 		end
 
 		def initialize ref
@@ -33,25 +49,25 @@ module SBDB
 				when Bdb::Db::Cursor  then [ref]
 				else [ref.bdb_object.cursor( nil, 0), ref]
 				end
-			if [Recno, Queue].any? {|t| t === @db }
-				def get k, v, f
-					l, w = @cursor.get( k, v, f)
-					l.nil? ? nil : [l.unpack('I')[0], w]
+			if [Recno, Queue].any? {|dbt| dbt === @db }
+				def get *ps
+					key, val = @cursor.get( *ps)
+					key.nil? ? nil : [key.unpack('I')[0], val]
 				end
 			end
 		end
 
-		def reverse k = nil, v = nil, &e
-			each k, v, LAST, PREV, &e
+		def reverse key = nil, val = nil, &exe
+			each key, val, LAST, PREV, &exe
 		end
 
-		def each k = nil, v = nil, f = nil, n = nil
-			return Enumerator.new( self, :each, k, v, f, n)  unless block_given?
-			n ||= NEXT
-			e = get k, v, f || FIRST
-			return  unless e
-			yield *e
-			yield *e  while e = get( k, v, n)
+		def each key = nil, val = nil, flg = nil, nxt = nil
+			return Enumerator.new( self, :each, key, val, flg, nxt)  unless block_given?
+			nxt ||= NEXT
+			ent = get key, val, flg || FIRST
+			return  unless ent
+			yield *ent
+			yield *ent  while ent = get( key, val, nxt)
 			nil
 		end
 	end

@@ -10,11 +10,11 @@ module SBDB
 	RDONLY      = Bdb::DB_RDONLY
 	READONLY    = RDONLY
 
-	def btree( *p)   Btree.new *p   end
-	def hash( *p)    Hash.new *p    end
-	def recno( *p)   Recno.new *p   end
-	def queue( *p)   Queue.new *p   end 
-	def unknown( *p) Unknown.new *p end
+	def btree( *ps)   Btree.new *ps   end
+	def hash( *ps)    Hash.new *ps    end
+	def recno( *ps)   Recno.new *ps   end
+	def queue( *ps)   Queue.new *ps   end 
+	def unknown( *ps) Unknown.new *ps end
 	alias open_db unknown
 
 	def raise_barrier *ps, &e

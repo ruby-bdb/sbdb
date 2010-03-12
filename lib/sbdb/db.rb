@@ -18,37 +18,37 @@ module SBDB
 		include Enumerable
 		def bdb_object()  @db  end
 		def sync()  @db.sync  end
-		def close( f = nil)  @db.close f || 0  end
-		def cursor( &e)  Cursor.new self, &e  end
+		def close( flg = nil)  @db.close flg || 0  end
+		def cursor( &exe)  Cursor.new self, &exe  end
 
-		def at k, txn = nil
-			@db.get _txn(txn), k.nil? ? nil : k.to_s, nil, 0
+		def at key, txn = nil
+			@db.get _txn(txn), key.nil? ? nil : key.to_s, nil, 0
 		rescue Bdb::KeyEmpty
 			return nil
 		end
 		alias [] at
 
-		def put k, v, txn = nil
-			if v.nil?
-				@db.del _txn(txn), k.to_s, 0
+		def put key, val, txn = nil
+			if val.nil?
+				@db.del _txn(txn), key.to_s, 0
 			else
-				@db.put _txn(txn), k.nil? ? nil : k.to_s, v.to_s, 0
+				@db.put _txn(txn), key.nil? ? nil : key.to_s, val.to_s, 0
 			end
 		end
-		
-		def []= k, v
-			put k, v
+
+		def []= key, val
+			put key, val
 		end
 
-		def delete k, txn = nil
-			@db.del _txn(txn), k.to_s
+		def delete key, txn = nil
+			@db.del _txn(txn), key.to_s
 		end
 		alias del delete
 
 		class << self
 			def new *ps, &exe
 				ret = obj = super( *ps)
-				begin ret = e.call obj
+				begin ret = exe.call obj
 				ensure
 					SBDB::raise_barrier obj.method(:sync)
 					SBDB::raise_barrier obj.method(:close)
@@ -58,9 +58,9 @@ module SBDB
 			alias open new
 		end
 
-		def _txn t
-			t ||= @txn
-			t && t.bdb_object
+		def _txn txn
+			txn ||= @txn
+			txn && t.bdb_object
 		end
 
 		def initialize file, *args
@@ -79,17 +79,17 @@ module SBDB
 			end
 		end
 
-		def each k = nil, v = nil, &e
-			cursor{|c|c.each k, v, &e}
+		def each key = nil, val = nil, &exe
+			cursor{|c|c.each key, val, &exe}
 		end
 
-		def reverse k = nil, v = nil, &e
-			cursor{|c|c.reverse k, v, &e}
+		def reverse key = nil, val = nil, &exe
+			cursor{|c|c.reverse key, val, &exe}
 		end
 
 		def to_hash k = nil, v = nil
 			h = {}
-			each( k, v) {|k, v| h[ k] = v }
+			each( key, val, h.method(:[]=))
 			h
 		end
 
@@ -99,9 +99,9 @@ module SBDB
 	end
 
 	class Unknown < DB
-		def self.new file, *p, &e
-			dbt = super( file, *p) {|db| db.bdb_object.get_type }
-			TYPES[dbt] ? TYPES[dbt].new( file, *p, &e) : super( file, *p, &e)
+		def self.new file, *ps, &exe
+			dbt = super( file, *ps) {|db| db.bdb_object.get_type }
+			TYPES[dbt] ? TYPES[dbt].new( file, *ps, &exe) : super( file, *ps, &exe)
 		end
 	end
 
@@ -114,15 +114,15 @@ module SBDB
 	TYPES[DB::HASH] = Hash
 
 	module Arrayisch
-		def [] k
-			super [k].pack('I')
+		def [] key
+			super [key].pack('I')
 		end
 
-		def []= k, v
-			super [k].pack('I'), v
+		def []= key, v
+			super [key].pack('I'), val
 		end
 
-		def push v, txn = nil
+		def push val, txn = nil
 			@db.put _txn(txn), "\0\0\0\0", v, Bdb::DB_APPEND
 		end
 	end
