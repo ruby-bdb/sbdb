@@ -50,8 +50,8 @@ module SBDB
 				ret = obj = super( *ps)
 				begin ret = exe.call obj
 				ensure
-					SBDB::raise_barrier obj.method(:sync)
-					SBDB::raise_barrier obj.method(:close)
+					SBDB::raise_barrier &obj.method(:sync)
+					SBDB::raise_barrier &obj.method(:close)
 				end  if exe
 				ret
 			end
@@ -133,7 +133,7 @@ module SBDB
 	Array = Recno
 	TYPES[DB::RECNO] = Recno
 
-	class Queue < Arrayisch
+	class Queue < DB
 		extend Arrayisch
 		def unshift txn = nil
 			@db.get _txn(txn), "\0\0\0\0", nil, Bdb::DB_CONSUME

@@ -75,7 +75,7 @@ module SBDB
 		def self.new *args
 			obj = ret = super( *args)
 			begin ret = yield obj
-			ensure SBDB::raise_barrier obj.method(:close)
+			ensure SBDB::raise_barrier &obj.method(:close)
 			end  if block_given?
 			ret
 		end

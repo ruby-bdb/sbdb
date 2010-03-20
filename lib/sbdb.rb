@@ -17,7 +17,7 @@ module SBDB
 	def unknown( *ps) Unknown.new *ps end
 	alias open_db unknown
 
-	def raise_barrier *ps, &e
+	def self.raise_barrier *ps, &e
 		e.call *ps
 	rescue Object
 		$stderr.puts [$!.class,$!,$!.backtrace].inspect

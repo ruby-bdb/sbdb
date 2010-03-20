@@ -36,7 +36,7 @@ module SBDB
 		end
 
 		def self.new *ps
-			ret = obj = super *ps
+			ret = obj = super( *ps)
 			begin ret = yield obj
 			ensure obj.close
 			end  if block_given?
