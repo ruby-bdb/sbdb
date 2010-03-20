@@ -10,8 +10,8 @@ begin
     gem.email = "Denis.Knauf@gmail.com"
     gem.homepage = "http://github.com/DenisKnauf/bdb"
     gem.authors = ["Denis Knauf"]
-    gem.files = ["README.md", "VERSION", "lib/**/*.rb", "test/**/*.rb"]
-    gem.require_paths = ["lib"]
+    gem.files = %w[AUTHORS README.md VERSION lib/**/*.rb test/**/*.rb]
+    gem.require_paths = %w[lib]
 		gem.add_dependency 'dk-bdb'
   end
   Jeweler::GemcutterTasks.new
