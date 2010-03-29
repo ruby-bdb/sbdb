@@ -118,12 +118,12 @@ module SBDB
 			super [key].pack('I')
 		end
 
-		def []= key, v
+		def []= key, val
 			super [key].pack('I'), val
 		end
 
 		def push val, txn = nil
-			@db.put _txn(txn), "\0\0\0\0", v, Bdb::DB_APPEND
+			@db.put _txn(txn), "\0\0\0\0", val, Bdb::DB_APPEND
 		end
 	end
 
