@@ -110,8 +110,8 @@ module SBDB
 			ps.last[:env] = self
 			name, flg, type =
 					String === ps[0] ? ps[0] : ps.last[:name],
-					Fixnum === ps[1] ? ps[1] : ps.last[:flags],
-					Fixnum === ps[2] ? ps[2] : ps.last[:type]
+					Fixnum === ps[2] ? ps[2] : ps.last[:flags],
+					Fixnum === ps[1] ? ps[1] : ps.last[:type]
 			@dbs[ [file, name, flg | CREATE]] ||= (type || SBDB::Unknown).new file, *ps, &exe
 		end
 	end
