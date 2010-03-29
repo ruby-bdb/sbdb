@@ -128,13 +128,13 @@ module SBDB
 	end
 
 	class Recno < DB
-		extend Arrayisch
+		include Arrayisch
 	end
 	Array = Recno
 	TYPES[DB::RECNO] = Recno
 
 	class Queue < DB
-		extend Arrayisch
+		include Arrayisch
 		def unshift txn = nil
 			@db.get _txn(txn), "\0\0\0\0", nil, Bdb::DB_CONSUME
 		end
