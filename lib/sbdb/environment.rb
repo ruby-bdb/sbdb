@@ -106,12 +106,10 @@ module SBDB
 		# If you use this, never use close. It's possible somebody else use it too.
 		# The Databases, which are opened, will close, if the Environment will close.
 		def [] file, *ps, &exe
-			ps.push ::Hash.new  unless ::Hash === ps.last
-			ps.last[:env] = self
-			name, flg, type =
-					String === ps[0] ? ps[0] : ps.last[:name],
-					Fixnum === ps[2] ? ps[2] : ps.last[:flags],
-					Fixnum === ps[1] ? ps[1] : ps.last[:type]
+			opts = ::Hash === ps.last ? ps.pop : {}
+			opts[:env] = self
+			name, type, flg = ps[0] || opts[:name], ps[1] || opts[:type], ps[2] || opts[:flags]
+			ps.push opts
 			@dbs[ [file, name, flg | CREATE]] ||= (type || SBDB::Unknown).new file, *ps, &exe
 		end
 	end

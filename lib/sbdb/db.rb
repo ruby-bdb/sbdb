@@ -63,6 +63,14 @@ module SBDB
 			txn && t.bdb_object
 		end
 
+		# Arguments:
+		# * file
+		# * name
+		# * type
+		# * flags
+		# * mode
+		# * env
+		# or: **file**, **opts**. *opts* must be a *::Hash* with keys like above, excluded *file*.
 		def initialize file, *args
 			opts = ::Hash === args.last ? args.pop : {}
 			opts = {:name => args[0], :type => args[1], :flags => args[2], :mode => args[3], :env => args[4]}.update opts
