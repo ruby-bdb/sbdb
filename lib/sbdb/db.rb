@@ -89,16 +89,16 @@ module SBDB
 		end
 
 		def each key = nil, val = nil, &exe
-			cursor{|c|c.each key, val, &exe}
+			cursor {|c| c.each key, val, &exe }
 		end
 
 		def reverse key = nil, val = nil, &exe
-			cursor{|c|c.reverse key, val, &exe}
+			cursor {|c| c.reverse key, val, &exe }
 		end
 
 		def to_hash key = nil, val = nil
 			ht = {}
-			each key, val, ht.method( :[]=)
+			each key, val, &ht.method( :[]=)
 			ht
 		end
 
