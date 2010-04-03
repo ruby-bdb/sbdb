@@ -96,7 +96,7 @@ module SBDB
 			cursor{|c|c.reverse key, val, &exe}
 		end
 
-		def to_hash key = nil, vval = nil
+		def to_hash key = nil, val = nil
 			ht = {}
 			each key, val, ht.method( :[]=)
 			ht
