@@ -96,10 +96,10 @@ module SBDB
 			cursor{|c|c.reverse key, val, &exe}
 		end
 
-		def to_hash k = nil, v = nil
-			h = {}
-			each( key, val, h.method(:[]=))
-			h
+		def to_hash key = nil, vval = nil
+			ht = {}
+			each key, val, ht.method( :[]=)
+			ht
 		end
 
 		def truncate txn = nil
