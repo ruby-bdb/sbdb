@@ -82,13 +82,9 @@ module SBDB
 			txn = opts[:txn]  # First is the global txn, second only for open.
 			begin
 				@db.open txn && txn.bdb_object, file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
-			rescue Exception => exc
+			rescue Object => exc
 				close
-				exc.backtrace.unshift "Trying to open #{open[:env] && "in #{open[:env]].home} "}database #{file} #{opts[:name]}"
 				raise exc
-			rescue
-				close
-				raise Object
 			end
 		end
 
