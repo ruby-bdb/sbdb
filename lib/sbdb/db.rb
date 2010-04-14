@@ -84,7 +84,7 @@ module SBDB
 				@db.open txn && txn.bdb_object, file, opts[:name], opts[:type], opts[:flags] || 0, opts[:mode] || 0
 			rescue Exception => exc
 				close
-				exc.backtrace.unshift "Trying to open #{open[:env] && "in #{open[:env].home} "}database #{file} #{opts[:name]}"
+				exc.backtrace.unshift "Trying to open #{open[:env] && "in #{open[:env]].home} "}database #{file} #{opts[:name]}"
 				raise exc
 			rescue
 				close
