@@ -1,4 +1,6 @@
 require 'rubygems'
+require 'rdoc/task'
+require 'rake/testtask'
 require 'rake'
 
 begin
@@ -19,7 +21,6 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
-require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test' << 'ext'
   test.pattern = 'test/**/*_test.rb'
@@ -43,7 +44,6 @@ task :test => :check_dependencies
 
 task :default => :test
 
-require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   if File.exist?('VERSION')
     version = File.read('VERSION')
