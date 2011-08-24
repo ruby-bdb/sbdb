@@ -10,7 +10,7 @@ begin
     gem.summary = %Q{Simple Ruby Berkeley DB}
     gem.description = %Q{Simple Ruby Berkeley DB wrapper library for bdb.}
     gem.email = "Denis.Knauf@gmail.com"
-    gem.homepage = "http://github.com/DenisKnauf/bdb"
+    gem.homepage = "http://github.com/ruby-bdb/sbdb"
     gem.authors = ["Denis Knauf"]
     gem.files = %w[AUTHORS README.md VERSION lib/**/*.rb test/**/*.rb]
     gem.require_paths = %w[lib]
