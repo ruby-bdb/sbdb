@@ -61,7 +61,7 @@ module SBDB
 		def initialize *args
 			opts = ::Hash === args.last ? args.pop : {}
 			opts = {:dir => args[0], :flags => args[1], :mode => args[2]}.update opts
-			@dbs, @env = WeakHash.new, Bdb::Env.new( 0)
+			@dbs, @env = Ref::WeakValueMap.new, Bdb::Env.new( 0)
 			@env.log_config opts[:log_config], 1  if opts[:log_config]
 			@env.lg_bsize = opts[:lg_bsize]  if opts[:lg_bsize]
 			@env.lg_max = opts[:lg_max]  if opts[:lg_max]

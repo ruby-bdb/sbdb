@@ -60,7 +60,11 @@ module SBDB
 
 		def _txn txn
 			txn ||= @txn
-			txn && t.bdb_object
+			txn && txn.bdb_object
+		end
+
+		def transaction flg = nil, &exe
+			block_given? ? home.transaction( flg, &exe) : home.transaction( flg)
 		end
 
 		# Arguments:
