@@ -1,5 +1,4 @@
 require 'bdb'
-require 'sbdb/weakhash'
 require 'sbdb/db'
 require 'sbdb/transaction'
 
