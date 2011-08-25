@@ -1,4 +1,5 @@
 require 'bdb'
+require 'ref'
 require 'sbdb/environment'
 require 'sbdb/db'
 require 'sbdb/cursor'

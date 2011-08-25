@@ -15,6 +15,7 @@ begin
     gem.files = %w[AUTHORS README.md VERSION lib/**/*.rb test/**/*.rb]
     gem.require_paths = %w[lib]
 		gem.add_dependency 'bdb'
+		gem.add_dependency 'ref'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
