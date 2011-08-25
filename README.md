@@ -1,14 +1,14 @@
 Dependencies
 ============
 
-You need first the [Bdb](http://github.com/DenisKnauf/bdb) and of course [ruby](http://ruby-lang.org).
+You need first the [Bdb](http://github.com/ruby-bdb/bdb) and of course [ruby](http://ruby-lang.org).
 
 Download
 ========
 
 via git:
 
-	git clone git://github.com/DenisKnauf/sbdb.git
+	git clone git://github.com/ruby-bdb/sbdb
 
 Install
 =======
