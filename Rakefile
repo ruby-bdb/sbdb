@@ -14,7 +14,7 @@ begin
     gem.authors = ["Denis Knauf"]
     gem.files = %w[AUTHORS README.md VERSION lib/**/*.rb test/**/*.rb]
     gem.require_paths = %w[lib]
-		gem.add_dependency 'bdb', '>= 0.2.6.4'
+		gem.add_dependency 'bdb', '>= 0.2.6.5'
 		gem.add_dependency 'ref'
   end
   Jeweler::GemcutterTasks.new
